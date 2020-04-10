@@ -26,6 +26,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - run:
+          name: Build Docker Image - Auth with Vault
           command: |
             export TAG=0.1.${CIRCLE_BUILD_NUM}
             export IMAGE_NAME=$CIRCLE_PROJECT_REPONAME
@@ -36,6 +37,7 @@ jobs:
             docker build -t $DOCKER_LOGIN/$IMAGE_NAME:$TAG .
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
             docker push $DOCKER_LOGIN/$IMAGE_NAME:$TAG
+            rm -rf vault/dockerhub
       # - persist_to_workspace:
       #     root: ~/project/vault
       #       # Must be relative path from root
@@ -64,3 +66,6 @@ workflows:
     jobs:
       - run_tests
       - vault_auth
+  build_test_duplicate:
+    jobs:
+      - run_tests
